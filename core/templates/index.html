@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% load static %}
+{% block meta %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .upload-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin: 0 auto 40px;
+            max-width: 600px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-container:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .btn-upload {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-upload:hover {
+            background: #E64A19;
+            transform: translateY(-2px);
+        }
+        
+        .printers-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: var(--accent-color);
+            margin: 15px auto 0;
+        }
+        
+        .printer-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        
+        .printer-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .printer-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .printer-body {
+            padding: 20px;
+        }
+        
+        .printer-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .printer-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .printer-info i {
+            width: 20px;
+            color: var(--secondary-color);
+            margin-right: 10px;
+        }
+        
+        .printer-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .status-available {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .btn-print {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-print:hover {
+            background: var(--secondary-color);
+        }
+        
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 15px;
+            margin: 40px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .upload-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="hero-section">
+        <h1 class="hero-title">ONLINE PRINTER</h1>
+        <p class="hero-subtitle">Печать документов в один клик в любом месте 24/7</p>
+        
+     
+    </div>
+
+    <div class="printers-section">
+        <h2 class="section-title">Доступные принтеры</h2>
+        
+        <div class="row">
+            {% for item in printers %}
+            <div class="col-md-4 col-sm-6">
+                <div class="printer-card">
+                    <img src="{{item.img1.url}}" class="printer-img" alt="{{item.name}}">
+                    <div class="printer-body">
+                        <h3 class="printer-title">{{item.terminal.name}}</h3>
+                        
+                        <div class="printer-info">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Стоимость: {{item.terminal.price_per_page_bw}} сом/стр (ч/б)</span>
+                        </div>
+                        
+                        <div class="printer-info">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Бумага: {{item.paper_count}} листов</span>
+                        </div>
+                        
+                        <div class="printer-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{item.terminal.location}}</span>
+                        </div>
+                        
+                        <span class="printer-status status-available">
+                            <i class="fas fa-circle"></i> Доступен
+                        </span>
+                        
+                        <a href="{% url 'detail' pk=item.pk %}" class="btn btn-print">
+                            <i class="fas fa-print me-2"></i>Печатать
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <h2 class="section-title">Карта принтеров</h2>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([40.53171, 72.79573], 11);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        
+        var printers = [
+            {% for printer in printers %}
+            {
+                name: "{{ printer.name }}",
+                lat: {{ printer.latitude }},
+                lng: {{ printer.longitude }},
+                paper: {{ printer.paper_count }},
+                terminal: "{{ printer.terminal }}",
+                location: "{{ printer.location }}"
+            },
+            {% endfor %}
+        ];
+        
+        printers.forEach(function(printer) {
+            if (printer.lat && printer.lng) {
+                var icon = L.divIcon({
+                    html: '<i class="fas fa-print" style="color: #6A1B9A; font-size: 24px;"></i>',
+                    className: 'printer-icon'
+                });
+                
+                var marker = L.marker([printer.lat, printer.lng], {icon: icon}).addTo(map);
+                marker.bindPopup(`
+                    <b>${printer.name}</b><br>
+                    <i class="fas fa-building"></i> ${printer.terminal}<br>
+                    <i class="fas fa-file-alt"></i> Бумага: ${printer.paper} листов<br>
+                    <i class="fas fa-map-marker-alt"></i> ${printer.location}
+                `);
+            }
+        });
+    </script>
+{% endblock %}

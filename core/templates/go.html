@@ -1,0 +1,6 @@
+<form method="post" action="{% url 'server' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <button type="submit">Загрузить</button>
+</form>
+{{message}}

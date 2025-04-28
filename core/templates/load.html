@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<style>
+    .payment-status-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+    
+    .status-content {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-icon {
+        font-size: 5rem;
+        margin-bottom: 30px;
+    }
+    
+    .success-icon {
+        color: #4CAF50;
+        animation: iconScale 0.5s ease-out;
+    }
+    
+    .status-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .status-message {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    
+    .printer-info {
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 25px 0;
+        text-align: left;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .info-icon {
+        color: var(--primary-color);
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+    
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: #5a1499;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 27, 154, 0.3);
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+    
+    .btn-secondary:hover {
+        background: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .btn i {
+        margin-right: 8px;
+    }
+    
+    @keyframes iconScale {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.2); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+        .status-content {
+            padding: 30px 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-status-container">
+    <div class="status-content">
+        <div class="status-icon">
+            <i class="fas fa-check-circle success-icon"></i>
+        </div>
+        
+        <h2 class="status-title">Оплата прошла успешно!</h2>
+        <p class="status-message">Ваш документ отправлен на печать. Вы можете забрать его в течение 1-5 минут.</p>
+        
+        <div class="printer-info">
+            <div class="info-item">
+                <i class="fas fa-print info-icon"></i>
+                <span style="color: #333;" >Принтер: <strong>{{ printer.name }}</strong></span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt info-icon"></i>
+                <span style="color: #333;">Адрес: <strong>{{ printer.terminal.location }}</strong></span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock info-icon"></i>
+                <span style="color: #333;">Статус: <strong style="color: #4CAF50;">В процессе печати</strong></span>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            {% comment %} {% url 'upload_document' printer_id=printer.id %} {% endcomment %}
+            <a href="" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Новый заказ на этом принтере
+            </a>
+            {% comment %} {% url 'printer_list' %} {% endcomment %}
+            <a href="#" class="btn btn-secondary">
+                <i class="fas fa-list"></i> К списку принтеров
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Анимация появления элементов
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(() => {
+            document.querySelector(".status-icon").style.opacity = "1";
+        }, 100);
+        
+        setTimeout(() => {
+            document.querySelector(".status-title").style.opacity = "1";
+            document.querySelector(".status-title").style.transform = "translateY(0)";
+        }, 300);
+        
+        setTimeout(() => {
+            document.querySelector(".status-message").style.opacity = "1";
+            document.querySelector(".status-message").style.transform = "translateY(0)";
+        }, 500);
+    });
+</script>
+{% endblock %}

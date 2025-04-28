@@ -1,0 +1,23 @@
+
+<!-- templates/group_subtree.html -->
+<!-- templates/group_subtree.html -->
+<ul>
+  {% for subgroup in subgroups %}
+    <li>
+      {{ subgroup.name }}
+      <ul>
+        {% for document in subgroup.documents.all %}
+          <li>{{ document.title }}</li>
+        {% endfor %}
+         </ul>
+    </li>
+  {% endfor %}
+</ul>
+
+
+  
+{% for template in templates %}
+    <p>{{ template.title }} 
+        <a href="{% url 'select_terminal' template.id %}">Выбрать терминал</a>
+    </p>
+{% endfor %}

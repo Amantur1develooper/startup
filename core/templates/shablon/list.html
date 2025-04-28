@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+    {% for group in groups %}
+      <li>
+        {{ group.name }}
+        <ul>
+          {% for document in group.documents.all %}
+            <li>{{ document.title }}</li>
+          {% endfor %}
+          {% include "shablon/list2.html" with subgroups=group.subgroups.all %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+  
+{% for template in templates %}
+    <p>{{ template.title }} 
+        <a href="{% url 'select_terminal' template.id %}">Выбрать терминал</a>
+    </p>
+{% endfor %}
+{% endblock content %}

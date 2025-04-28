@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<style>
+    .terminal-selection {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    .selection-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .selection-title {
+        font-size: 2.2rem;
+        color: white;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .document-info {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+    
+    .terminals-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+    }
+    
+    .terminal-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+    
+    .terminal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .terminal-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .terminal-body {
+        padding: 25px;
+    }
+    
+    .terminal-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .terminal-details {
+        margin-bottom: 20px;
+    }
+    
+    .detail-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .detail-icon {
+        color: var(--primary-color);
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .terminal-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .status-available {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .btn-print {
+        background: var(--primary-color);
+        color: white;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-print:hover {
+        background: #5a1499;
+    }
+    
+    .btn-print i {
+        margin-right: 8px;
+    }
+    
+    .empty-state {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        grid-column: 1 / -1;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+    
+    .empty-text {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .terminals-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .selection-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="terminal-selection">
+    <div class="selection-header">
+        <h1 class="selection-title">Выберите терминал</h1>
+        <p class="document-info">Для печати документа: <strong>{{ document.title }}</strong></p>
+    </div>
+    
+    {% if terminals %}
+        <div class="terminals-grid">
+            {% for terminal in terminals %}
+                {% for printer in terminal.printers.all %}
+                    <div class="terminal-card">
+                        <img src="{{ printer.img1.url }}" class="terminal-image" alt="{{ printer.terminal.name }}">
+                        
+                        <div class="terminal-body">
+                            <span class="terminal-status status-available">
+                                <i class="fas fa-circle"></i> Доступен
+                            </span>
+                            
+                            <h3 class="terminal-name">{{ printer.terminal.name }}</h3>
+                            
+                            <div class="terminal-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt detail-icon"></i>
+                                    <span style="color: #333;" >{{ printer.terminal.location }}</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <i class="fas fa-money-bill-wave detail-icon"></i>
+                                    <span style="color: #333;">{{ printer.terminal.price_per_page_bw }} сом/стр (ч/б)</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <i class="fas fa-file-alt detail-icon"></i>
+                                    <span style="color: #333;">{{ printer.paper_count }} листов доступно</span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <i class="fas fa-clock detail-icon"></i>
+                                    <span style="color: #333;">~1:5 мин до печати</span>
+                                </div>
+                            </div>
+                            
+                            <a href="{% url 'payment' document.id %}" class="btn-print">
+                                <i class="fas fa-print"></i> Оплатить и распечатать
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-print"></i>
+            </div>
+            <p class="empty-text">Нет доступных терминалов для печати</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

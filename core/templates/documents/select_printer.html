@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<style>
+    .printer-selection {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    .selection-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .selection-title {
+        font-size: 2.2rem;
+        color: white;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+    
+    .document-info {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+    }
+    
+    .selection-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .document-preview {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .document-image {
+        width: 80px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .default-image {
+        width: 80px;
+        height: 100px;
+        background: linear-gradient(135deg, #6A1B9A, #9C27B0);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin-right: 20px;
+    }
+    
+    .document-details {
+        flex: 1;
+    }
+    
+    .document-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .document-meta {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .printer-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        background-color: white;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .printer-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.2);
+        outline: none;
+    }
+    
+    .printer-option {
+        padding: 8px;
+    }
+    
+    .printer-details {
+        margin-top: 30px;
+    }
+    
+    .printer-map {
+        height: 250px;
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 20px;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+    }
+    
+    .btn-submit {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    
+    .btn-submit:hover {
+        background: #5a1499;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 27, 154, 0.3);
+    }
+    
+    .btn-submit i {
+        margin-right: 10px;
+    }
+    
+    .printer-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-icon {
+        color: var(--primary-color);
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .selection-title {
+            font-size: 1.8rem;
+        }
+        
+        .printer-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="printer-selection">
+    <div class="selection-header">
+        <h1 class="selection-title">Выберите принтер</h1>
+        <p class="document-info">Для документа: <strong>{{ document.title }}</strong></p>
+    </div>
+    
+    <div class="selection-card">
+        <div class="document-preview">
+            {% if document.preview_image %}
+                <img src="{{ document.preview_image.url }}" class="document-image" alt="{{ document.title }}">
+            {% else %}
+                <div class="default-image">
+                    <i class="far fa-file-alt"></i>
+                </div>
+            {% endif %}
+            <div class="document-details">
+                <h3 class="document-name">{{ document.title }}</h3>
+                <div class="document-meta">
+                    <p>{{ document.paper_count }} страниц • {{ document.get_file_size_display }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="printer" class="form-label">
+                    <i class="fas fa-print"></i> Доступные принтеры
+                </label>
+                <select name="printer" id="printer" class="printer-select" required>
+                    <option value="" disabled selected>Выберите принтер</option>
+                    {% for printer in printers %}
+                        <option value="{{ printer.id }}" class="printer-option">
+                            {{ printer.name }} ({{ printer.terminal.location }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="printer-details" id="printerDetails">
+                <div class="printer-map" id="printerMap">
+                    <p>Выберите принтер для просмотра его расположения</p>
+                </div>
+                
+                <div class="printer-info" id="dynamicPrinterInfo">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt info-icon"></i>
+                        <span>Адрес: <span id="printerLocation">—</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-money-bill-wave info-icon"></i>
+                        <span>Цена: <span id="printerPrice">—</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-file-alt info-icon"></i>
+                        <span>Бумага: <span id="printerPaper">—</span></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock info-icon"></i>
+                        <span>Время печати: <span id="printerTime">~1 мин</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-arrow-right"></i> Перейти к оплате
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // При загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        const printerSelect = document.getElementById('printer');
+        const printerDetails = document.getElementById('printerDetails');
+        
+        // Скрываем детали принтера до выбора
+        printerDetails.style.display = 'none';
+        
+        // При изменении выбора принтера
+        printerSelect.addEventListener('change', function() {
+            if (this.value) {
+                // Здесь можно добавить AJAX запрос для получения деталей выбранного принтера
+                // Для примера используем статические данные
+                const selectedOption = this.options[this.selectedIndex];
+                const printerName = selectedOption.text.split(' (')[0];
+                
+                // Обновляем информацию о принтере
+                document.getElementById('printerLocation').textContent = selectedOption.text.split(' (')[1].replace(')', '');
+                document.getElementById('printerPrice').textContent = '{{ document.price_display }}';
+                document.getElementById('printerPaper').textContent = 'Достаточно';
+                
+                // Показываем блок с деталями
+                printerDetails.style.display = 'block';
+                
+                // Здесь можно инициализировать карту с местоположением принтера
+                updateMapPreview(printerName);
+            } else {
+                printerDetails.style.display = 'none';
+            }
+        });
+        
+        function updateMapPreview(printerName) {
+            const mapElement = document.getElementById('printerMap');
+            mapElement.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <i class="fas fa-map-marked-alt" style="font-size: 2rem; color: #6A1B9A; margin-bottom: 10px;"></i>
+                    <p>Принтер: <strong>${printerName}</strong></p>
+                    <p style="font-size: 0.9rem; color: #666;">Карта местоположения будет отображаться здесь</p>
+                </div>
+            `;
+        }
+    });
+</script>
+{% endblock %}

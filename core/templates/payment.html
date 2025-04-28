@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<style>
+    .payment-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    .payment-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .payment-title {
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .payment-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .document-info {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    
+    .info-label {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .info-value {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    .total-label {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+    }
+    
+    .total-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .payment-methods {
+        margin-bottom: 30px;
+    }
+    
+    .method-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .method-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .method-option {
+        position: relative;
+    }
+    
+    .method-option input {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .method-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 10px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        height: 100%;
+    }
+    
+    .method-label:hover {
+        border-color: var(--primary-color);
+    }
+    
+    .method-option input:checked + .method-label {
+        border-color: var(--primary-color);
+        background-color: rgba(106, 27, 154, 0.05);
+    }
+    
+    .method-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+    
+    .method-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: center;
+    }
+    
+    .btn-pay {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-pay:hover {
+        background: #5a1499;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 27, 154, 0.3);
+    }
+    
+    .btn-pay i {
+        margin-right: 10px;
+    }
+    
+    @media (max-width: 576px) {
+        .method-options {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .payment-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <div class="payment-header">
+        <h1 class="payment-title">Оплата печати</h1>
+    </div>
+    
+    <div class="payment-card">
+        <div class="document-info">
+            <div class="info-row">
+                <span class="info-label">Документ:</span>
+                <span class="info-value">{{ document.title }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Количество страниц:</span>
+                <span class="info-value">{{ document.pages }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Тип печати:</span>
+                <span class="info-value">
+                    {% if document.is_color %}
+                        Цветная
+                    {% else %}
+                        Чёрно-белая
+                    {% endif %}
+                </span>
+            </div>
+            
+            <div class="total-row">
+                <span class="total-label">Итого к оплате:</span>
+                <span class="total-value">{{ document.price_document }} сом</span>
+            </div>
+        </div>
+        
+        <form method="post" id="paymentForm">
+            {% csrf_token %}
+            
+            <div class="payment-methods">
+                <h3 class="method-title">Выберите способ оплаты:</h3>
+                
+                <div class="method-options">
+                    <div class="method-option">
+                        <input type="radio" id="card" name="payment_method" value="card" checked>
+                        <label for="card" class="method-label">
+                            <i class="fas fa-credit-card method-icon"></i>
+                            <span style="color: #333;"class="method-name">Карта</span>
+                        </label>
+                    </div>
+                    
+                    <div class="method-option">
+                        <input type="radio" id="phone" name="payment_method" value="phone">
+                        <label for="phone" class="method-label">
+                            <i class="fas fa-mobile-alt method-icon"></i>
+                            <span style="color: #333;"class="method-name">Телефон</span>
+                        </label>
+                    </div>
+                    
+                    <div class="method-option">
+                        <input type="radio" id="qr" name="payment_method" value="qr">
+                        <label for="qr" class="method-label">
+                            <i class="fas fa-qrcode method-icon"></i>
+                            <span style="color: #333;"class="method-name">QR-код</span>
+                        </label>
+                    </div>
+                    
+                    <div class="method-option">
+                        <input type="radio" id="wallet" name="payment_method" value="wallet">
+                        <label for="wallet" class="method-label">
+                            <i class="fas fa-wallet method-icon"></i>
+                            <span style="color: #333;"class="method-name">Кошелёк</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-pay">
+                <i class="fas fa-lock"></i> Оплатить {{ document.price_document }} сом
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Анимация при выборе способа оплаты
+    document.querySelectorAll('.method-option input').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.method-label').forEach(label => {
+                label.style.transform = '';
+            });
+            
+            if (this.checked) {
+                this.nextElementSibling.style.transform = 'scale(1.05)';
+            }
+        });
+    });
+</script>
+{% endblock %}
